@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Crown Oven",
+    "slug": "crown-oven",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1A1A1A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "newArchEnabled": true,
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1A1A1A"
+      }
+    },
+    "plugins": []
+  }
+}
