@@ -17,6 +17,9 @@ import { formatOrderNumber } from "../../utils/orderNumber";
 
 const GRADIENT = ["#DAA520", "#F0A830", "#FA9141"];
 
+
+
+
 const STATUS_COLORS = {
   PENDING: COLORS.gray,
   ASSIGNED: "#E8732A",
