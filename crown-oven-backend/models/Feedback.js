@@ -36,6 +36,10 @@ const feedbackSchema = new mongoose.Schema(
       maxlength: [300, "Reply cannot exceed 300 characters"],
       default: null,
     },
+    adminReplyUpdatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

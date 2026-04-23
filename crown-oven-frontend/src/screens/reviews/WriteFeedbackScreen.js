@@ -21,7 +21,7 @@ export default function WriteFeedbackScreen({ navigation, route }) {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      Alert.alert("Error", "Please select a rating.");
+      Alert.alert("Error", "Please select a rating ");
       return;
     }
     setSubmitting(true);
