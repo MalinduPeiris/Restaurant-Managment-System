@@ -7,3 +7,4 @@ export const updateReview = (id, data) => API.patch(`/reviews/${id}`, data);
 export const deleteReview = (id) => API.delete(`/reviews/${id}`);
 export const listAllReviews = () => API.get("/reviews/admin/all");
 export const adminDeleteReview = (id) => API.delete(`/reviews/admin/${id}`);
+export const adminReplyReview = (id, reply) => API.patch(`/reviews/admin/${id}/reply`, { reply });

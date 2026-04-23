@@ -10,6 +10,7 @@ import {
   deleteReview,
   listAllReviews,
   adminDeleteReview,
+  adminReplyReview,
 } from "../controllers/reviewController.js";
 
 const router = Router();
@@ -25,6 +26,7 @@ router.delete("/:id", requireAuth, deleteReview);
 
 // Admin routes
 router.get("/admin/all", requireAuth, requireAdmin, listAllReviews);
+router.patch("/admin/:id/reply", requireAuth, requireAdmin, adminReplyReview);
 router.delete("/admin/:id", requireAuth, requireAdmin, adminDeleteReview);
 
 export default router;

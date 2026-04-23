@@ -131,10 +131,12 @@ export async function replyToFeedback(req, res) {
     const feedback = await Feedback.findById(req.params.id);
     if (!feedback) return res.status(404).json({ message: "Feedback not found" });
 
+    const isEdit = !!feedback.adminReply;
     feedback.adminReply = reply.trim();
+    feedback.adminReplyUpdatedAt = new Date();
     await feedback.save();
 
-    res.json({ message: "Reply added", feedback });
+    res.json({ message: isEdit ? "Reply updated" : "Reply added", feedback });
   } catch (error) {
     console.error("Reply to feedback error:", error);
     res.status(500).json({ message: "Server error" });
