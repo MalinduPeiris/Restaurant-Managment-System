@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API = axios.create({
-  baseURL: "http://172.28.18.196:3000/api",
+  baseURL: "https://restaurant-managment-system-4t6n.onrender.com/api",
   timeout: 10000,
 });
 
