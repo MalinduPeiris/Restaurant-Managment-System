@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput, Alert,
+  KeyboardAvoidingView, Platform, ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -39,77 +40,87 @@ export default function WriteFeedbackScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.black} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Rate Experience</Text>
-        </View>
-
-        <Text style={styles.orderLabel}>Order #{formatOrderNumber(orderNumber)}</Text>
-
-        {/* Star Rating */}
-        <Text style={styles.sectionTitle}>How was your experience?</Text>
-        <View style={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <TouchableOpacity key={star} onPress={() => setRating(star)} activeOpacity={0.7}>
-              <Ionicons
-                name={star <= rating ? "star" : "star-outline"}
-                size={44}
-                color={star <= rating ? "#DAA520" : COLORS.lightGray}
-                style={styles.star}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={styles.ratingLabel}>
-          {rating === 0 ? "Tap a star to rate" :
-           rating === 1 ? "Poor" :
-           rating === 2 ? "Fair" :
-           rating === 3 ? "Good" :
-           rating === 4 ? "Very Good" : "Excellent"}
-        </Text>
-
-        {/* Comment */}
-        <Text style={styles.sectionTitle}>Comments (optional)</Text>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="Tell us about your experience..."
-          value={comment}
-          onChangeText={setComment}
-          multiline
-          maxLength={300}
-          textAlignVertical="top"
-        />
-        <Text style={styles.charCount}>{comment.length}/300</Text>
-
-        {/* Submit */}
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={submitting || rating === 0}
-          activeOpacity={0.7}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <LinearGradient
-            colors={rating === 0 ? [COLORS.gray, COLORS.gray] : GRADIENT}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={24} color={COLORS.black} />
+            </TouchableOpacity>
+            <Text style={styles.title}>Rate Experience</Text>
+          </View>
+
+          <Text style={styles.orderLabel}>Order #{formatOrderNumber(orderNumber)}</Text>
+
+          {/* Star Rating */}
+          <Text style={styles.sectionTitle}>How was your experience?</Text>
+          <View style={styles.starsRow}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <TouchableOpacity key={star} onPress={() => setRating(star)} activeOpacity={0.7}>
+                <Ionicons
+                  name={star <= rating ? "star" : "star-outline"}
+                  size={44}
+                  color={star <= rating ? "#DAA520" : COLORS.lightGray}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Text style={styles.ratingLabel}>
+            {rating === 0 ? "Tap a star to rate" :
+             rating === 1 ? "Poor" :
+             rating === 2 ? "Fair" :
+             rating === 3 ? "Good" :
+             rating === 4 ? "Very Good" : "Excellent"}
+          </Text>
+
+          {/* Comment */}
+          <Text style={styles.sectionTitle}>Comments (optional)</Text>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Tell us about your experience..."
+            placeholderTextColor={COLORS.gray}
+            value={comment}
+            onChangeText={setComment}
+            multiline
+            maxLength={300}
+            textAlignVertical="top"
+          />
+          <Text style={styles.charCount}>{comment.length}/300</Text>
+
+          {/* Submit */}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={submitting || rating === 0}
+            activeOpacity={0.7}
           >
-            <Text style={styles.submitBtnText}>
-              {submitting ? "Submitting..." : "Submit Feedback"}
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+            <LinearGradient
+              colors={rating === 0 ? [COLORS.gray, COLORS.gray] : GRADIENT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
+            >
+              <Text style={styles.submitBtnText}>
+                {submitting ? "Submitting..." : "Submit Feedback"}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.background },
-  container: { padding: 20 },
+  scrollContent: { padding: 20, paddingBottom: 32 },
 
   header: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
   backBtn: { marginRight: 12, padding: 4 },
