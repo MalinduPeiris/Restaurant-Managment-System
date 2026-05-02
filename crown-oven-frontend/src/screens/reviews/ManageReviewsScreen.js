@@ -11,6 +11,7 @@ import { useState, useCallback } from "react";
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   RefreshControl, Alert, Modal, TextInput,
+  KeyboardAvoidingView, Platform, ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
@@ -327,90 +328,107 @@ export default function ManageReviewsScreen() {
       )}
 
       {/* ── Unified Reply / Edit-Reply Modal ── */}
-      <Modal visible={showReplyModal} transparent animationType="slide" onRequestClose={closeReplyModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <View style={styles.modalTitleRow}>
-                <Ionicons
-                  name={isEditing ? "create-outline" : "chatbubble-outline"}
-                  size={20}
-                  color={COLORS.primary}
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={styles.modalTitle}>
-                  {isEditing ? "Edit Reply" : "Reply to " + (replyTarget?.mode === "review" ? "Review" : "Feedback")}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={closeReplyModal} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <Ionicons name="close" size={24} color={COLORS.charcoal} />
-              </TouchableOpacity>
-            </View>
-
-            {replyTarget && (
-              <View style={styles.modalBody}>
-                {/* Customer context */}
-                <View style={styles.modalContext}>
-                  <View style={styles.modalAvatarSmall}>
-                    <Text style={styles.modalAvatarText}>
-                      {replyTarget.customerName?.charAt(0)?.toUpperCase() || "?"}
-                    </Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.modalCustomer}>{replyTarget.customerName}</Text>
-                    <Text style={styles.modalStars}>{buildStars(replyTarget.rating)}</Text>
-                  </View>
+      <Modal
+        visible={showReplyModal}
+        transparent
+        animationType="slide"
+        onRequestClose={closeReplyModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleRow}>
+                  <Ionicons
+                    name={isEditing ? "create-outline" : "chatbubble-outline"}
+                    size={20}
+                    color={COLORS.primary}
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text style={styles.modalTitle}>
+                    {isEditing ? "Edit Reply" : "Reply to " + (replyTarget?.mode === "review" ? "Review" : "Feedback")}
+                  </Text>
                 </View>
-                {replyTarget.comment ? (
-                  <Text style={styles.modalComment}>"{replyTarget.comment}"</Text>
-                ) : null}
-
-                {/* If editing, show current reply as reference */}
-                {isEditing ? (
-                  <View style={styles.currentReplyBox}>
-                    <Text style={styles.currentReplyLabel}>Current reply</Text>
-                    <Text style={styles.currentReplyText}>{replyTarget.adminReply}</Text>
-                  </View>
-                ) : null}
-
-                <TextInput
-                  style={styles.replyInput}
-                  placeholder={isEditing ? "Update your reply..." : "Write your reply..."}
-                  placeholderTextColor={COLORS.gray}
-                  value={replyText}
-                  onChangeText={setReplyText}
-                  multiline
-                  maxLength={300}
-                  textAlignVertical="top"
-                />
-                <Text style={[styles.charCount, replyText.length >= 280 && styles.charCountWarn]}>
-                  {replyText.length}/300
-                </Text>
-
-                <TouchableOpacity onPress={handleSubmitReply} disabled={replying} activeOpacity={0.7}>
-                  <LinearGradient
-                    colors={GRADIENT}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={[styles.submitReplyBtn, replying && { opacity: 0.6 }]}
-                  >
-                    <Ionicons
-                      name={isEditing ? "checkmark-circle" : "send"}
-                      size={16}
-                      color="#fff"
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text style={styles.submitReplyText}>
-                      {replying
-                        ? (isEditing ? "Updating..." : "Sending...")
-                        : (isEditing ? "Update Reply" : "Send Reply")}
-                    </Text>
-                  </LinearGradient>
+                <TouchableOpacity onPress={closeReplyModal} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Ionicons name="close" size={24} color={COLORS.charcoal} />
                 </TouchableOpacity>
               </View>
-            )}
+
+              {replyTarget && (
+                <ScrollView
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{ flexGrow: 1 }}
+                >
+                  <View style={styles.modalBody}>
+                    {/* Customer context */}
+                    <View style={styles.modalContext}>
+                      <View style={styles.modalAvatarSmall}>
+                        <Text style={styles.modalAvatarText}>
+                          {replyTarget.customerName?.charAt(0)?.toUpperCase() || "?"}
+                        </Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.modalCustomer}>{replyTarget.customerName}</Text>
+                        <Text style={styles.modalStars}>{buildStars(replyTarget.rating)}</Text>
+                      </View>
+                    </View>
+                    {replyTarget.comment ? (
+                      <Text style={styles.modalComment}>"{replyTarget.comment}"</Text>
+                    ) : null}
+
+                    {/* If editing, show current reply as reference */}
+                    {isEditing ? (
+                      <View style={styles.currentReplyBox}>
+                        <Text style={styles.currentReplyLabel}>Current reply</Text>
+                        <Text style={styles.currentReplyText}>{replyTarget.adminReply}</Text>
+                      </View>
+                    ) : null}
+
+                    <TextInput
+                      style={styles.replyInput}
+                      placeholder={isEditing ? "Update your reply..." : "Write your reply..."}
+                      placeholderTextColor={COLORS.gray}
+                      value={replyText}
+                      onChangeText={setReplyText}
+                      multiline
+                      maxLength={300}
+                      textAlignVertical="top"
+                      autoFocus={false}
+                    />
+                    <Text style={[styles.charCount, replyText.length >= 280 && styles.charCountWarn]}>
+                      {replyText.length}/300
+                    </Text>
+
+                    <TouchableOpacity onPress={handleSubmitReply} disabled={replying} activeOpacity={0.7}>
+                      <LinearGradient
+                        colors={GRADIENT}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={[styles.submitReplyBtn, replying && { opacity: 0.6 }]}
+                      >
+                        <Ionicons
+                          name={isEditing ? "checkmark-circle" : "send"}
+                          size={16}
+                          color="#fff"
+                          style={{ marginRight: 6 }}
+                        />
+                        <Text style={styles.submitReplyText}>
+                          {replying
+                            ? (isEditing ? "Updating..." : "Sending...")
+                            : (isEditing ? "Update Reply" : "Send Reply")}
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
+              )}
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
