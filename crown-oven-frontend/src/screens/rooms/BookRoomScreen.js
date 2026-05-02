@@ -124,6 +124,7 @@ export default function BookRoomScreen({ navigation, route }) {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [guestCount, setGuestCount] = useState("");
+  const [isGuestCountFocused, setIsGuestCountFocused] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [specialRequests, setSpecialRequests] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -359,8 +360,13 @@ export default function BookRoomScreen({ navigation, route }) {
             placeholder="e.g. 10"
             value={guestCount}
             onChangeText={(value) => setGuestCount(sanitizeInteger(value))}
+            onFocus={() => setIsGuestCountFocused(true)}
+            onBlur={() => setIsGuestCountFocused(false)}
             keyboardType="numeric"
           />
+          {isGuestCountFocused && (
+            <Text style={styles.guestHelperText}>Enter only numeric values</Text>
+          )}
 
           {availableAmenities.length > 0 && (
             <>
@@ -605,6 +611,13 @@ const styles = StyleSheet.create({
   },
   amenityChipTextActive: {
     color: COLORS.charcoal,
+  },
+  guestHelperText: {
+    fontFamily: FONTS.body,
+    fontSize: SIZES.caption,
+    color: COLORS.gray,
+    marginTop: -12,
+    marginBottom: 12,
   },
   charCount: {
     fontFamily: FONTS.body,
