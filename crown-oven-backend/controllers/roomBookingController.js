@@ -161,7 +161,7 @@ export async function createBooking(req, res) {
     if (overlapping) {
       return res.status(409).json({ message: "Room is already booked for the selected time slot" });
     }
-
+//price calculations
     const amenityDocs = await getSelectableAmenities(room, selectedAmenities ?? amenities);
     const amenitySnapshots = amenityDocs.map((amenity) => ({
       amenityId: amenity._id,

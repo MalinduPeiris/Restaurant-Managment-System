@@ -347,7 +347,7 @@ export default function ManageRoomsScreen() {
       Alert.alert("Error", "Update failed");
     }
   };
-
+//amenti screen ui
   const renderAmenityCatalog = () => (
     <Card style={styles.catalogCard}>
       <View style={styles.catalogHeader}>
@@ -450,7 +450,7 @@ export default function ManageRoomsScreen() {
   };
 
   if (loading) return <LoadingSpinner />;
-
+//room dashboadrd head ui
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
       <FlatList
