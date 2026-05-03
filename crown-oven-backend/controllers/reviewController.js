@@ -50,7 +50,10 @@ export async function createReview(req, res) {
     if (Number.isNaN(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({ message: "Rating must be an integer between 1 and 5" });
     }
-    if (comment && comment.length > 220) {
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ message: "A comment is required" });
+    }
+    if (comment.trim().length > 220) {
       return res.status(400).json({ message: "Comment cannot exceed 220 characters" });
     }
 
@@ -149,6 +152,7 @@ export async function updateReview(req, res) {
       review.rating = rating;
     }
     if (comment !== undefined) {
+      if (!comment.trim()) return res.status(400).json({ message: "Comment cannot be empty" });
       if (comment.length > 220) return res.status(400).json({ message: "Comment cannot exceed 220 characters" });
       review.comment = comment.trim();
     }

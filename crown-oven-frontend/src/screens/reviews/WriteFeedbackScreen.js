@@ -19,10 +19,18 @@ export default function WriteFeedbackScreen({ navigation, route }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const isFormValid = rating > 0 && comment.trim().length > 0;
 
   const handleSubmit = async () => {
+    setError("");
     if (rating === 0) {
-      Alert.alert("Error", "Please select a rating ");
+      setError("Please add a star rating before submitting.");
+      return;
+    }
+    if (!comment.trim()) {
+      setError("Please add a comment before submitting.");
       return;
     }
     setSubmitting(true);
@@ -32,7 +40,7 @@ export default function WriteFeedbackScreen({ navigation, route }) {
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
-      Alert.alert("Error", err.response?.data?.message || "Failed to submit feedback.");
+      setError(err.response?.data?.message || "Failed to submit feedback.");
     } finally {
       setSubmitting(false);
     }
@@ -75,14 +83,14 @@ export default function WriteFeedbackScreen({ navigation, route }) {
           </View>
           <Text style={styles.ratingLabel}>
             {rating === 0 ? "Tap a star to rate" :
-             rating === 1 ? "Poor" :
-             rating === 2 ? "Fair" :
-             rating === 3 ? "Good" :
-             rating === 4 ? "Very Good" : "Excellent"}
+              rating === 1 ? "Poor" :
+                rating === 2 ? "Fair" :
+                  rating === 3 ? "Good" :
+                    rating === 4 ? "Very Good" : "Excellent"}
           </Text>
 
           {/* Comment */}
-          <Text style={styles.sectionTitle}>Comments (optional)</Text>
+          <Text style={styles.sectionTitle}>Comments <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={styles.commentInput}
             placeholder="Tell us about your experience..."
@@ -95,14 +103,21 @@ export default function WriteFeedbackScreen({ navigation, route }) {
           />
           <Text style={styles.charCount}>{comment.length}/300</Text>
 
-          {/* Submit */}
+          {error ? (
+            <View style={styles.errorBox}>
+              <Ionicons name="alert-circle" size={16} color="#e53935" />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
+
+          {/* Submit */}}
           <TouchableOpacity
             onPress={handleSubmit}
-            disabled={submitting || rating === 0}
+            disabled={submitting || !isFormValid}
             activeOpacity={0.7}
           >
             <LinearGradient
-              colors={rating === 0 ? [COLORS.gray, COLORS.gray] : GRADIENT}
+              colors={!isFormValid ? [COLORS.gray, COLORS.gray] : GRADIENT}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
@@ -156,4 +171,21 @@ const styles = StyleSheet.create({
 
   submitBtn: { borderRadius: 10, paddingVertical: 14, alignItems: "center" },
   submitBtnText: { fontFamily: FONTS.heading, fontSize: SIZES.button, color: "#fff" },
+  required: { color: "#e53935", fontFamily: FONTS.heading },
+  errorBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FDECEA",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
+  },
+  errorText: {
+    flex: 1,
+    fontFamily: FONTS.body,
+    fontSize: SIZES.caption,
+    color: "#e53935",
+  },
 });

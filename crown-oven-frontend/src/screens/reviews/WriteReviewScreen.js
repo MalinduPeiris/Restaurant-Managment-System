@@ -38,10 +38,16 @@ export default function WriteReviewScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const isFormValid = rating > 0 && comment.trim().length > 0;
+
   const handleSubmit = async () => {
     setError("");
     if (rating === 0) {
-      setError("Please select a rating before submitting your review.");
+      setError("Please add a star rating before submitting.");
+      return;
+    }
+    if (!comment.trim()) {
+      setError("Please add a comment before submitting.");
       return;
     }
     setLoading(true);
@@ -123,8 +129,8 @@ export default function WriteReviewScreen({ route, navigation }) {
           </View>
 
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Comment</Text>
-            <Text style={styles.sectionHint}>Optional, but helpful for service improvement.</Text>
+            <Text style={styles.sectionTitle}>Comment <Text style={styles.required}>*</Text></Text>
+            <Text style={styles.sectionHint}>Required — tell us what you liked or what could improve.</Text>
 
             <View style={styles.commentShell}>
               <TextInput
@@ -155,7 +161,7 @@ export default function WriteReviewScreen({ route, navigation }) {
             title="Submit Review"
             onPress={handleSubmit}
             loading={loading}
-            disabled={rating === 0}
+            disabled={!isFormValid}
             style={styles.submitBtn}
           />
         </ScrollView>
@@ -350,4 +356,5 @@ const styles = StyleSheet.create({
   submitBtn: {
     marginTop: 6,
   },
+  required: { color: "#e53935", fontFamily: FONTS.heading },
 });
