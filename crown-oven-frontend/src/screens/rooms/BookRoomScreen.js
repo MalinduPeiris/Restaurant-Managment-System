@@ -71,7 +71,7 @@ function buildCalendar(referenceDate, minDate, maxDate) {
     cells,
   };
 }
-
+//validations
 function sanitizeInteger(value) {
   return String(value || "").replace(/\D/g, "");
 }
@@ -179,7 +179,8 @@ export default function BookRoomScreen({ navigation, route }) {
     }));
   const amenityTotal = amenityCosts.reduce((sum, amenity) => sum + amenity.cost, 0);
   const totalAmount = roomCost + amenityTotal;
-
+//validations
+//validations
   const validateForm = () => {
     if (!date) {
       Alert.alert("Invalid Date", "Please select a booking date from the calendar.");
@@ -225,7 +226,7 @@ export default function BookRoomScreen({ navigation, route }) {
       if (specialRequests.trim()) {
         payload.specialRequests = specialRequests.trim();
       }
-
+//validations
       await createRoomBooking(payload);
       Alert.alert("Success", "Your room booking has been submitted!", [
         {
@@ -354,7 +355,7 @@ export default function BookRoomScreen({ navigation, route }) {
             onChange={setEndTime}
             minimumTime={minimumEndTime}
           />
-
+//validations
           <Input
             label={`Number of Guests (max ${room.capacity})`}
             placeholder="e.g. 10"

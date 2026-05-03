@@ -40,6 +40,8 @@ const TYPE_COLORS = {
 
 const FILTERS = ["All", "Pending", "Confirmed", "Completed", "Rejected", "Cancelled"];
 
+//main logic
+
 export default function ManageRoomBookingsScreen() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,14 +92,14 @@ export default function ManageRoomBookingsScreen() {
       },
     ]);
   };
-
+//booking card in bookings
   const renderBooking = ({ item }) => {
     const badgeColor = STATUS_COLORS[item.status] || COLORS.gray;
     const typeColor = TYPE_COLORS[item.room?.type || item.roomType] || COLORS.gray;
     const isPending = item.status === "Pending";
     const isConfirmed = item.status === "Confirmed";
     const amenities = item.amenities || [];
-
+//booking card
     return (
       <Card style={styles.bookingCard}>
         <View style={styles.topRow}>
@@ -120,13 +122,13 @@ export default function ManageRoomBookingsScreen() {
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Customer</Text>
           <Text style={styles.detailValue}>
-            {item.customerName || item.customer?.name || "—"}
+            {item.customerName || item.customer?.name || "ï¿½"}
           </Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Phone</Text>
           <Text style={styles.detailValue}>
-            {item.customerPhone || item.customer?.phone || "—"}
+            {item.customerPhone || item.customer?.phone || "ï¿½"}
           </Text>
         </View>
         <View style={styles.detailRow}>
@@ -150,7 +152,7 @@ export default function ManageRoomBookingsScreen() {
                 <View key={getAmenityKey(amenity)} style={styles.amenityTag}>
                   <Ionicons name={getAmenityIcon(amenity)} size={12} color={COLORS.primary} />
                   <Text style={styles.amenityTagText}>
-                    {getAmenityLabel(amenity)} · {formatAmenityPrice(amenity)}
+                    {getAmenityLabel(amenity)} ï¿½ {formatAmenityPrice(amenity)}
                   </Text>
                 </View>
               ))}
@@ -168,7 +170,7 @@ export default function ManageRoomBookingsScreen() {
         <View style={[styles.detailRow, { marginTop: 8 }]}>
           <Text style={styles.detailLabel}>Total</Text>
           <Text style={[styles.detailValue, { color: COLORS.primary, fontFamily: FONTS.bold }]}>
-            Rs. {item.totalAmount?.toFixed(2) || "—"}
+            Rs. {item.totalAmount?.toFixed(2) || "ï¿½"}
           </Text>
         </View>
 
@@ -236,7 +238,7 @@ export default function ManageRoomBookingsScreen() {
         onActionPress={onRefresh}
       />
     </View>
-
+//filters ui
       <View style={styles.filterContainer}>
         <ScrollView
           horizontal

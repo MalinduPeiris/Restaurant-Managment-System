@@ -8,7 +8,7 @@ const VALID_TYPES = ["private", "vip", "party"];
 function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }
-
+//validations
 function normalizeArrayInput(value) {
   if (value === undefined || value === null || value === "") return [];
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -27,7 +27,7 @@ function normalizeArrayInput(value) {
   }
   return [];
 }
-
+//validations
 async function resolveAmenityIds(rawAmenities) {
   const amenityIds = normalizeArrayInput(rawAmenities);
   if (!amenityIds.length) return [];
@@ -68,7 +68,7 @@ function parseFiniteNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : NaN;
 }
-
+//validations
 export async function createRoom(req, res) {
   try {
     const { name, type, capacity, pricePerHour, amenities, description } = req.body;
@@ -154,7 +154,7 @@ export async function updateRoom(req, res) {
     if (!isValidObjectId(req.params.id)) {
       return res.status(404).json({ message: "Room not found" });
     }
-
+//validations
     const { name, type, capacity, pricePerHour, amenities, description, isAvailable, removeImage } = req.body;
     const updates = {};
 
@@ -220,7 +220,7 @@ export async function deleteRoom(req, res) {
     if (!isValidObjectId(req.params.id)) {
       return res.status(404).json({ message: "Room not found" });
     }
-
+//validations
     const activeBookings = await RoomBooking.countDocuments({
       roomId: req.params.id,
       status: { $in: ["Pending", "Confirmed"] },

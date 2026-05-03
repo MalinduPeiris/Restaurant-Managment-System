@@ -43,6 +43,7 @@ const TYPE_COLORS = {
   party: "#E8732A",
 };
 
+//validations
 function sanitizeRoomName(value = "") {
   return value.replace(/\d+/g, "");
 }
@@ -155,7 +156,7 @@ export default function ManageRoomsScreen() {
     });
     setAmenityModalVisible(true);
   };
-
+//validations
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -178,7 +179,7 @@ export default function ManageRoomsScreen() {
       });
     }
   };
-
+//validations
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
@@ -223,7 +224,7 @@ export default function ManageRoomsScreen() {
     const trimmedName = form.name.trim();
     const trimmedCapacity = form.capacity.trim();
     const trimmedPricePerHour = form.pricePerHour.trim();
-
+//validations
     if (!trimmedName || !form.type || !trimmedCapacity || !trimmedPricePerHour) {
       Alert.alert("Error", "Name, type, capacity, and price are required.");
       return;
@@ -283,7 +284,7 @@ export default function ManageRoomsScreen() {
   const handleSaveAmenity = async () => {
     const trimmedAmenityName = amenityForm.name.trim();
     const trimmedAmenityPrice = String(amenityForm.price || "").trim();
-
+//validations
     if (!trimmedAmenityName) {
       Alert.alert("Error", "Amenity name is required.");
       return;
@@ -395,6 +396,8 @@ export default function ManageRoomsScreen() {
     const typeColor = TYPE_COLORS[item.type] || COLORS.gray;
     const visibleAmenities = (item.amenities || []).slice(0, 3);
 
+// item display card
+
     return (
       <Card style={styles.roomCard}>
         <View style={styles.roomRow}>
@@ -482,6 +485,8 @@ export default function ManageRoomsScreen() {
           <Text style={styles.fabText}>Add Room</Text>
         </LinearGradient>
       </TouchableOpacity>
+
+//add update screen
 
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
@@ -609,6 +614,9 @@ export default function ManageRoomsScreen() {
           </View>
         </View>
       </Modal>
+
+
+// aminate edit and add
 
       <Modal visible={amenityModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>

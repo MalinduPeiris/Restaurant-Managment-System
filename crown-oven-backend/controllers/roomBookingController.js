@@ -63,7 +63,7 @@ function serializeBooking(booking) {
     selectedAmenities: data.selectedAmenities || [],
   };
 }
-
+//validations
 async function getSelectableAmenities(room, rawAmenities) {
   const amenityIds = normalizeArrayInput(rawAmenities);
   if (!amenityIds.length) return [];
@@ -89,7 +89,7 @@ async function getSelectableAmenities(room, rawAmenities) {
 
   return amenityIds.map((id) => amenities.find((amenity) => String(amenity._id) === String(id)));
 }
-
+//validations
 export async function createBooking(req, res) {
   try {
     const { roomId, date, startTime, endTime, guestCount, selectedAmenities, amenities, specialRequests } = req.body;
@@ -232,7 +232,7 @@ export async function getMyBookings(req, res) {
     res.status(500).json({ message: "Server error" });
   }
 }
-
+//validations
 export async function cancelBooking(req, res) {
   try {
     if (!isValidObjectId(req.params.id)) return res.status(404).json({ message: "Booking not found" });
@@ -281,7 +281,7 @@ export async function listAllBookings(req, res) {
     res.status(500).json({ message: "Server error" });
   }
 }
-
+//validations
 export async function updateBookingStatus(req, res) {
   try {
     const { status } = req.body;
