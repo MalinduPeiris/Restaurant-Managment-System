@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -34,11 +34,19 @@ const TYPE_DESCRIPTIONS = {
   vip: "Premium room styling for elevated celebrations.",
   party: "Larger layouts for energetic group events.",
 };
+const ROOM_FILTERS = [
+  { key: "all", label: "All Rooms" },
+  { key: "private", label: "Private" },
+  { key: "vip", label: "VIP" },
+  { key: "party", label: "Party" },
+];
 
 export default function RoomsScreen({ navigation }) {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedType, setSelectedType] = useState("all");
+  const [showTypeMenu, setShowTypeMenu] = useState(false);
 
   const fetchRooms = useCallback(async () => {
     try {
@@ -65,6 +73,12 @@ export default function RoomsScreen({ navigation }) {
     fetchRooms();
   };
 
+  const filteredRooms = useMemo(
+    () => (selectedType === "all" ? rooms : rooms.filter((room) => room.type === selectedType)),
+    [rooms, selectedType]
+  );
+  const selectedFilterLabel = ROOM_FILTERS.find((filter) => filter.key === selectedType)?.label || "All Rooms";
+
   const renderHeader = () => (
     <>
       <LinearGradient
@@ -79,7 +93,7 @@ export default function RoomsScreen({ navigation }) {
             <Text style={styles.heroBadgeText}>Room Booking</Text>
           </View>
           <View style={styles.heroCountPill}>
-            <Text style={styles.heroCountText}>{rooms.length} spaces</Text>
+            <Text style={styles.heroCountText}>{filteredRooms.length} spaces</Text>
           </View>
         </View>
 
@@ -104,6 +118,42 @@ export default function RoomsScreen({ navigation }) {
           <Text style={styles.viewBookingsText}>View Your Bookings</Text>
         </LinearGradient>
       </TouchableOpacity>
+
+      <View style={styles.filterWrap}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.filterTrigger}
+          onPress={() => setShowTypeMenu((prev) => !prev)}
+        >
+          <Ionicons name="funnel-outline" size={16} color={COLORS.charcoal} />
+          <Text style={styles.filterTriggerText}>{selectedFilterLabel}</Text>
+          <Ionicons name={showTypeMenu ? "chevron-up" : "chevron-down"} size={16} color={COLORS.gray} />
+        </TouchableOpacity>
+
+        {showTypeMenu && (
+          <View style={styles.filterMenu}>
+            {ROOM_FILTERS.map((filter) => {
+              const isActive = selectedType === filter.key;
+              return (
+                <TouchableOpacity
+                  key={filter.key}
+                  style={[styles.filterOption, isActive && styles.filterOptionActive]}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    setSelectedType(filter.key);
+                    setShowTypeMenu(false);
+                  }}
+                >
+                  <Text style={[styles.filterOptionText, isActive && styles.filterOptionTextActive]}>
+                    {filter.label}
+                  </Text>
+                  {isActive ? <Ionicons name="checkmark" size={16} color={COLORS.primary} /> : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      </View>
     </>
   );
 
@@ -197,7 +247,7 @@ export default function RoomsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <FlatList
-        data={rooms}
+        data={filteredRooms}
         keyExtractor={(item) => item._id}
         renderItem={renderRoom}
         contentContainerStyle={styles.list}
@@ -210,7 +260,7 @@ export default function RoomsScreen({ navigation }) {
             colors={[COLORS.primary]}
           />
         }
-        ListEmptyComponent={<EmptyState message="No rooms available at the moment." />}
+        ListEmptyComponent={<EmptyState message={`No ${selectedFilterLabel.toLowerCase()} available right now.`} />}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
@@ -293,6 +343,52 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.heading,
     fontSize: SIZES.body,
     color: COLORS.white,
+  },
+  filterWrap: {
+    marginBottom: 14,
+  },
+  filterTrigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  filterTriggerText: {
+    flex: 1,
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.body,
+    color: COLORS.charcoal,
+  },
+  filterMenu: {
+    marginTop: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
+    overflow: "hidden",
+  },
+  filterOption: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  filterOptionActive: {
+    backgroundColor: COLORS.primary + "10",
+  },
+  filterOptionText: {
+    fontFamily: FONTS.medium,
+    fontSize: SIZES.body,
+    color: COLORS.charcoal,
+  },
+  filterOptionTextActive: {
+    color: COLORS.primary,
   },
   roomCard: {
     marginBottom: 16,
