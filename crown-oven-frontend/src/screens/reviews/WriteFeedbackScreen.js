@@ -19,20 +19,36 @@ export default function WriteFeedbackScreen({ navigation, route }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  const isFormValid = rating > 0 && comment.trim().length > 0;
+  const [ratingError, setRatingError] = useState("");
+  const [commentError, setCommentError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   const handleSubmit = async () => {
-    setError("");
+    let hasError = false;
+    setRatingError("");
+    setCommentError("");
+    setApiError("");
+
     if (rating === 0) {
-      setError("Please add a star rating before submitting.");
-      return;
+      setRatingError("Please add a star rating.");
+      hasError = true;
     }
     if (!comment.trim()) {
-      setError("Please add a comment before submitting.");
+      setCommentError("Please add a comment.");
+      hasError = true;
+    }
+    if (hasError) {
+      Alert.alert(
+        "Missing Information",
+        rating === 0 && !comment.trim()
+          ? "Please add a star rating and a comment before submitting."
+          : rating === 0
+          ? "Please add a star rating before submitting."
+          : "Please add a comment before submitting."
+      );
       return;
     }
+
     setSubmitting(true);
     try {
       await submitFeedback({ orderId, rating, comment: comment.trim() });
@@ -40,7 +56,7 @@ export default function WriteFeedbackScreen({ navigation, route }) {
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to submit feedback.");
+      setApiError(err.response?.data?.message || "Failed to submit feedback.");
     } finally {
       setSubmitting(false);
     }
@@ -71,11 +87,15 @@ export default function WriteFeedbackScreen({ navigation, route }) {
           <Text style={styles.sectionTitle}>How was your experience?</Text>
           <View style={styles.starsRow}>
             {[1, 2, 3, 4, 5].map((star) => (
-              <TouchableOpacity key={star} onPress={() => setRating(star)} activeOpacity={0.7}>
+              <TouchableOpacity
+                key={star}
+                onPress={() => { setRating(star); setRatingError(""); }}
+                activeOpacity={0.7}
+              >
                 <Ionicons
                   name={star <= rating ? "star" : "star-outline"}
                   size={44}
-                  color={star <= rating ? "#DAA520" : COLORS.lightGray}
+                  color={star <= rating ? "#DAA520" : ratingError ? "#e53935" : COLORS.lightGray}
                   style={styles.star}
                 />
               </TouchableOpacity>
@@ -88,36 +108,42 @@ export default function WriteFeedbackScreen({ navigation, route }) {
                   rating === 3 ? "Good" :
                     rating === 4 ? "Very Good" : "Excellent"}
           </Text>
+          {ratingError ? (
+            <Text style={styles.fieldError}>{ratingError}</Text>
+          ) : null}
 
           {/* Comment */}
-          <Text style={styles.sectionTitle}>Comments <Text style={styles.required}>*</Text></Text>
+          <Text style={[styles.sectionTitle, { marginTop: 8 }]}>Comments <Text style={styles.required}>*</Text></Text>
           <TextInput
-            style={styles.commentInput}
+            style={[styles.commentInput, commentError ? styles.commentInputError : null]}
             placeholder="Tell us about your experience..."
             placeholderTextColor={COLORS.gray}
             value={comment}
-            onChangeText={setComment}
+            onChangeText={(text) => { setComment(text); if (text.trim()) setCommentError(""); }}
             multiline
             maxLength={300}
             textAlignVertical="top"
           />
+          {commentError ? (
+            <Text style={styles.fieldError}>{commentError}</Text>
+          ) : null}
           <Text style={styles.charCount}>{comment.length}/300</Text>
 
-          {error ? (
+          {apiError ? (
             <View style={styles.errorBox}>
               <Ionicons name="alert-circle" size={16} color="#e53935" />
-              <Text style={styles.errorText}>{error}</Text>
+              <Text style={styles.errorText}>{apiError}</Text>
             </View>
           ) : null}
 
-          {/* Submit */}}
+          {/* Submit */}
           <TouchableOpacity
             onPress={handleSubmit}
-            disabled={submitting || !isFormValid}
+            disabled={submitting}
             activeOpacity={0.7}
           >
             <LinearGradient
-              colors={!isFormValid ? [COLORS.gray, COLORS.gray] : GRADIENT}
+              colors={GRADIENT}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[styles.submitBtn, submitting && { opacity: 0.6 }]}
@@ -164,9 +190,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingTop: 12, fontFamily: FONTS.body, fontSize: SIZES.body,
     backgroundColor: COLORS.white,
   },
+  commentInputError: {
+    borderColor: "#e53935",
+    backgroundColor: "#fff8f8",
+  },
   charCount: {
     fontFamily: FONTS.body, fontSize: SIZES.caption, color: COLORS.gray,
-    textAlign: "right", marginTop: 4, marginBottom: 24,
+    textAlign: "right", marginTop: 4, marginBottom: 16,
+  },
+  fieldError: {
+    fontFamily: FONTS.body, fontSize: SIZES.caption, color: "#e53935",
+    marginTop: 4, marginBottom: 8,
   },
 
   submitBtn: { borderRadius: 10, paddingVertical: 14, alignItems: "center" },

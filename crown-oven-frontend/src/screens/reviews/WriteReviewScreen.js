@@ -36,20 +36,36 @@ export default function WriteReviewScreen({ route, navigation }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const isFormValid = rating > 0 && comment.trim().length > 0;
+  const [ratingError, setRatingError] = useState("");
+  const [commentError, setCommentError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   const handleSubmit = async () => {
-    setError("");
+    let hasError = false;
+    setRatingError("");
+    setCommentError("");
+    setApiError("");
+
     if (rating === 0) {
-      setError("Please add a star rating before submitting.");
-      return;
+      setRatingError("Please add a star rating.");
+      hasError = true;
     }
     if (!comment.trim()) {
-      setError("Please add a comment before submitting.");
+      setCommentError("Please add a comment.");
+      hasError = true;
+    }
+    if (hasError) {
+      Alert.alert(
+        "Missing Information",
+        rating === 0 && !comment.trim()
+          ? "Please add a star rating and a comment before submitting."
+          : rating === 0
+          ? "Please add a star rating before submitting."
+          : "Please add a comment before submitting."
+      );
       return;
     }
+
     setLoading(true);
     try {
       await createReview({ dishId, rating, comment: comment.trim() });
@@ -57,7 +73,7 @@ export default function WriteReviewScreen({ route, navigation }) {
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to submit review.");
+      setApiError(err.response?.data?.message || "Failed to submit review.");
     } finally {
       setLoading(false);
     }
@@ -98,8 +114,8 @@ export default function WriteReviewScreen({ route, navigation }) {
             </View>
           </LinearGradient>
 
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Your Rating</Text>
+          <View style={[styles.sectionCard, ratingError ? styles.sectionCardError : null]}>
+            <Text style={styles.sectionTitle}>Your Rating <Text style={styles.required}>*</Text></Text>
             <Text style={styles.sectionHint}>Select the stars that match your experience.</Text>
 
             <View style={styles.starRow}>
@@ -108,14 +124,14 @@ export default function WriteReviewScreen({ route, navigation }) {
                 return (
                   <TouchableOpacity
                     key={star}
-                    onPress={() => setRating(star)}
+                    onPress={() => { setRating(star); setRatingError(""); }}
                     activeOpacity={0.75}
                     style={[styles.starBtn, active && styles.starBtnActive]}
                   >
                     <Ionicons
                       name={active ? "star" : "star-outline"}
                       size={30}
-                      color={active ? COLORS.primary : COLORS.lightGray}
+                      color={active ? COLORS.primary : ratingError ? "#e53935" : COLORS.lightGray}
                     />
                   </TouchableOpacity>
                 );
@@ -126,23 +142,31 @@ export default function WriteReviewScreen({ route, navigation }) {
               <Text style={styles.ratingValue}>{rating === 0 ? "Not rated yet" : `${rating} / 5`}</Text>
               <Text style={styles.ratingLabel}>{RATING_COPY[rating] || RATING_COPY[0]}</Text>
             </View>
+
+            {ratingError ? (
+              <Text style={styles.fieldError}>{ratingError}</Text>
+            ) : null}
           </View>
 
-          <View style={styles.sectionCard}>
+          <View style={[styles.sectionCard, commentError ? styles.sectionCardError : null]}>
             <Text style={styles.sectionTitle}>Comment <Text style={styles.required}>*</Text></Text>
             <Text style={styles.sectionHint}>Required — tell us what you liked or what could improve.</Text>
 
-            <View style={styles.commentShell}>
+            <View style={[styles.commentShell, commentError ? styles.commentShellError : null]}>
               <TextInput
                 placeholder="Tell us what you liked, what could improve, or how the dish tasted..."
                 placeholderTextColor={COLORS.gray}
                 value={comment}
-                onChangeText={(text) => setComment(text.slice(0, MAX_COMMENT))}
+                onChangeText={(text) => { setComment(text.slice(0, MAX_COMMENT)); if (text.trim()) setCommentError(""); }}
                 multiline
                 textAlignVertical="top"
                 style={styles.commentTextArea}
               />
             </View>
+
+            {commentError ? (
+              <Text style={styles.fieldError}>{commentError}</Text>
+            ) : null}
 
             <View style={styles.commentFooter}>
               <Text style={styles.commentTip}>Keep it short, honest, and specific.</Text>
@@ -150,10 +174,10 @@ export default function WriteReviewScreen({ route, navigation }) {
             </View>
           </View>
 
-          {error ? (
+          {apiError ? (
             <View style={styles.errorBox}>
               <Ionicons name="alert-circle" size={16} color={COLORS.error} />
-              <Text style={styles.errorText}>{error}</Text>
+              <Text style={styles.errorText}>{apiError}</Text>
             </View>
           ) : null}
 
@@ -161,7 +185,7 @@ export default function WriteReviewScreen({ route, navigation }) {
             title="Submit Review"
             onPress={handleSubmit}
             loading={loading}
-            disabled={!isFormValid}
+            disabled={false}
             style={styles.submitBtn}
           />
         </ScrollView>
@@ -310,6 +334,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
     minHeight: 160,
+  },
+  commentShellError: {
+    borderColor: "#e53935",
+    backgroundColor: "#fff8f8",
+  },
+  sectionCardError: {
+    borderWidth: 1,
+    borderColor: "rgba(229,57,53,0.3)",
+  },
+  fieldError: {
+    fontFamily: FONTS.body,
+    fontSize: SIZES.caption,
+    color: "#e53935",
+    marginTop: 6,
+    marginBottom: 2,
   },
   commentTextArea: {
     minHeight: 120,
