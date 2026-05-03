@@ -158,7 +158,7 @@ export default function BookRoomScreen({ navigation, route }) {
         : [...prev, amenityId]
     );
   };
-
+//total amount calculations
   const calcHours = () => {
     if (!normalizedStartTime || !normalizedEndTime) return 0;
     const [sh, sm] = normalizedStartTime.split(":").map(Number);
@@ -413,7 +413,7 @@ export default function BookRoomScreen({ navigation, route }) {
             style={{ marginTop: 8 }}
           />
           <Text style={styles.charCount}>{specialRequests.length}/300</Text>
-
+//price ui
           {hours > 0 && (
             <Card style={styles.breakdownCard}>
               <Text style={styles.breakdownTitle}>Price Breakdown</Text>
