@@ -50,7 +50,10 @@ export async function createReview(req, res) {
     if (Number.isNaN(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({ message: "Rating must be an integer between 1 and 5" });
     }
-    if (comment && comment.length > 220) {
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ message: "A comment is required" });
+    }
+    if (comment.trim().length > 220) {
       return res.status(400).json({ message: "Comment cannot exceed 220 characters" });
     }
 
@@ -149,6 +152,7 @@ export async function updateReview(req, res) {
       review.rating = rating;
     }
     if (comment !== undefined) {
+      if (!comment.trim()) return res.status(400).json({ message: "Comment cannot be empty" });
       if (comment.length > 220) return res.status(400).json({ message: "Comment cannot exceed 220 characters" });
       review.comment = comment.trim();
     }
@@ -214,6 +218,35 @@ export async function adminDeleteReview(req, res) {
     res.json({ message: "Review deleted by admin" });
   } catch (error) {
     console.error("Admin delete review error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+// PATCH /api/reviews/admin/:id/reply - Admin: post or edit a reply on a review
+export async function adminReplyReview(req, res) {
+  try {
+    const { reply } = req.body;
+
+    if (!reply || !reply.trim()) {
+      return res.status(400).json({ message: "Reply is required" });
+    }
+    if (reply.length > 300) {
+      return res.status(400).json({ message: "Reply cannot exceed 300 characters" });
+    }
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ message: "Review not found" });
+
+    review.adminReply = reply.trim();
+    review.adminReplyUpdatedAt = new Date();
+    await review.save();
+
+    res.json({ message: review.adminReply ? "Reply updated" : "Reply added", review });
+  } catch (error) {
+    console.error("Admin reply review error:", error);
     res.status(500).json({ message: "Server error" });
   }
 }

@@ -27,7 +27,10 @@ export async function submitFeedback(req, res) {
     if (Number.isNaN(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({ message: "Rating must be an integer between 1 and 5" });
     }
-    if (comment && comment.length > 300) {
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ message: "A comment is required" });
+    }
+    if (comment.trim().length > 300) {
       return res.status(400).json({ message: "Comment cannot exceed 300 characters" });
     }
 
@@ -127,14 +130,17 @@ export async function replyToFeedback(req, res) {
     if (!isValidObjectId(req.params.id)) {
       return res.status(404).json({ message: "Feedback not found" });
     }
+// PATCH /api/feedback/admin/:id/reply - Admin: edit feedback
 
     const feedback = await Feedback.findById(req.params.id);
     if (!feedback) return res.status(404).json({ message: "Feedback not found" });
 
+    const isEdit = !!feedback.adminReply;
     feedback.adminReply = reply.trim();
+    feedback.adminReplyUpdatedAt = new Date();
     await feedback.save();
 
-    res.json({ message: "Reply added", feedback });
+    res.json({ message: isEdit ? "Reply updated" : "Reply added", feedback });
   } catch (error) {
     console.error("Reply to feedback error:", error);
     res.status(500).json({ message: "Server error" });

@@ -96,6 +96,14 @@ export default function DishReviewsScreen({ route, navigation }) {
 
       <Text style={styles.reviewStars}>{buildStars(item.rating)}</Text>
       {item.comment ? <Text style={styles.reviewComment}>{item.comment}</Text> : null}
+
+      {/* Admin reply */}
+      {item.adminReply ? (
+        <View style={styles.adminReplyBox}>
+          <Text style={styles.adminReplyLabel}>Response from the restaurant</Text>
+          <Text style={styles.adminReplyText}>{item.adminReply}</Text>
+        </View>
+      ) : null}
     </Card>
   );
 
@@ -160,6 +168,16 @@ const styles = StyleSheet.create({
   reviewDate: { fontFamily: FONTS.body, fontSize: SIZES.caption, color: COLORS.gray },
   reviewStars: { color: COLORS.primary, fontSize: 16, marginBottom: 6 },
   reviewComment: { fontFamily: FONTS.body, fontSize: SIZES.body, color: COLORS.charcoal, lineHeight: 20 },
+  adminReplyBox: {
+    marginTop: 10, padding: 10,
+    backgroundColor: "#DAA52015", borderRadius: 8,
+    borderLeftWidth: 3, borderLeftColor: "#DAA520",
+  },
+  adminReplyLabel: {
+    fontFamily: FONTS.heading, fontSize: SIZES.caption,
+    color: "#DAA520", marginBottom: 4,
+  },
+  adminReplyText: { fontFamily: FONTS.body, fontSize: SIZES.body, color: COLORS.charcoal },
 });
 
 

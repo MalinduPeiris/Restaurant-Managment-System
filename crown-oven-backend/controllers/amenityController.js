@@ -27,7 +27,7 @@ export async function createAmenity(req, res) {
     const { name, price, isChargeable, isActive } = req.body;
     const parsedPrice = Number(price || 0);
     const chargeable = normalizeBoolean(isChargeable, parsedPrice > 0);
-
+//validations
     if (!name?.trim()) {
       return res.status(400).json({ message: "Amenity name is required" });
     }
@@ -41,7 +41,7 @@ export async function createAmenity(req, res) {
       isChargeable: chargeable,
       isActive: normalizeBoolean(isActive, true),
     });
-
+//validations
     res.status(201).json({ message: "Amenity created", amenity });
   } catch (error) {
     console.error("Create amenity error:", error);
@@ -51,13 +51,13 @@ export async function createAmenity(req, res) {
     res.status(500).json({ message: "Server error" });
   }
 }
-
+//validations
 export async function updateAmenity(req, res) {
   try {
     if (!isValidObjectId(req.params.id)) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-
+//validations
     const { name, price, isChargeable, isActive } = req.body;
     const updates = {};
 
@@ -78,7 +78,7 @@ export async function updateAmenity(req, res) {
         updates.price = 0;
       }
     }
-
+//validations
     if (price !== undefined && (chargeable === undefined || chargeable)) {
       const parsedPrice = Number(price);
       if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
@@ -95,11 +95,11 @@ export async function updateAmenity(req, res) {
       new: true,
       runValidators: true,
     });
-
+//validations
     if (!amenity) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-
+//validations
     res.json({ message: "Amenity updated", amenity });
   } catch (error) {
     console.error("Update amenity error:", error);

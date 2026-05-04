@@ -30,6 +30,16 @@ const reviewSchema = new mongoose.Schema(
       maxlength: [220, "Comment cannot exceed 220 characters"],
       default: "",
     },
+    adminReply: {
+      type: String,
+      trim: true,
+      maxlength: [300, "Reply cannot exceed 300 characters"],
+      default: null,
+    },
+    adminReplyUpdatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true, collection: "reviews" }
 );

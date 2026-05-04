@@ -71,7 +71,7 @@ function buildCalendar(referenceDate, minDate, maxDate) {
     cells,
   };
 }
-
+//validations
 function sanitizeInteger(value) {
   return String(value || "").replace(/\D/g, "");
 }
@@ -124,6 +124,7 @@ export default function BookRoomScreen({ navigation, route }) {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [guestCount, setGuestCount] = useState("");
+  const [isGuestCountFocused, setIsGuestCountFocused] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [specialRequests, setSpecialRequests] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -157,7 +158,7 @@ export default function BookRoomScreen({ navigation, route }) {
         : [...prev, amenityId]
     );
   };
-
+//total amount calculations
   const calcHours = () => {
     if (!normalizedStartTime || !normalizedEndTime) return 0;
     const [sh, sm] = normalizedStartTime.split(":").map(Number);
@@ -178,7 +179,8 @@ export default function BookRoomScreen({ navigation, route }) {
     }));
   const amenityTotal = amenityCosts.reduce((sum, amenity) => sum + amenity.cost, 0);
   const totalAmount = roomCost + amenityTotal;
-
+//validations
+//validations
   const validateForm = () => {
     if (!date) {
       Alert.alert("Invalid Date", "Please select a booking date from the calendar.");
@@ -224,7 +226,7 @@ export default function BookRoomScreen({ navigation, route }) {
       if (specialRequests.trim()) {
         payload.specialRequests = specialRequests.trim();
       }
-
+//validations
       await createRoomBooking(payload);
       Alert.alert("Success", "Your room booking has been submitted!", [
         {
@@ -353,14 +355,19 @@ export default function BookRoomScreen({ navigation, route }) {
             onChange={setEndTime}
             minimumTime={minimumEndTime}
           />
-
+//validations
           <Input
             label={`Number of Guests (max ${room.capacity})`}
             placeholder="e.g. 10"
             value={guestCount}
             onChangeText={(value) => setGuestCount(sanitizeInteger(value))}
+            onFocus={() => setIsGuestCountFocused(true)}
+            onBlur={() => setIsGuestCountFocused(false)}
             keyboardType="numeric"
           />
+          {isGuestCountFocused && (
+            <Text style={styles.guestHelperText}>Enter only numeric values</Text>
+          )}
 
           {availableAmenities.length > 0 && (
             <>
@@ -406,7 +413,7 @@ export default function BookRoomScreen({ navigation, route }) {
             style={{ marginTop: 8 }}
           />
           <Text style={styles.charCount}>{specialRequests.length}/300</Text>
-
+//price ui
           {hours > 0 && (
             <Card style={styles.breakdownCard}>
               <Text style={styles.breakdownTitle}>Price Breakdown</Text>
@@ -605,6 +612,13 @@ const styles = StyleSheet.create({
   },
   amenityChipTextActive: {
     color: COLORS.charcoal,
+  },
+  guestHelperText: {
+    fontFamily: FONTS.body,
+    fontSize: SIZES.caption,
+    color: COLORS.gray,
+    marginTop: -12,
+    marginBottom: 12,
   },
   charCount: {
     fontFamily: FONTS.body,
